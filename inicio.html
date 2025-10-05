@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Import - Soporte Técnico</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+
+    <link rel="stylesheet" href="./css/inicio.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-container">
+            <h1 class="main-title">Data Import - Soporte Técnico</h1>
+            <p class="subtitle">Sistema de gestión de tickets</p>
+        </div>
+        
+        <div class="content-container">
+            <p>Bienvenido al sistema de tickets de soporte técnico de Data Import. Haga clic en el botón "Empezar" para crear un nuevo ticket de soporte.</p>
+            
+            <button class="btn-start" data-bs-toggle="modal" data-bs-target="#ticketModal">
+                <i class="fas fa-play-circle me-2"></i>Empezar
+            </button>
+
+            <div style="margin: 15px 0;">
+                <p>¿Ya tiene un ticket? Consulte su estado</p>
+                <button class="btn-check-status" data-bs-toggle="modal" data-bs-target="#statusModal">
+                    <i class="fas fa-search me-2"></i>Consultar Estado
+                </button>
+            </div>
+            
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>Respuesta Rápida</h4>
+                        <p>Tiempos de respuesta según su ubicación</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>Seguimiento de Tickets</h4>
+                        <p>Monitoreo del estado de sus solicitudes</p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-cog"></i>
+                    </div>
+                    <div class="feature-text">
+                        <h4>Soporte Especializado</h4>
+                        <p>Técnicos capacitados para resolver sus problemas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal del Formulario Completo -->
+    <div class="modal fade" id="ticketModal" tabindex="-1" aria-labelledby="ticketModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ticketModalLabel"><i class="fas fa-ticket-alt me-2"></i>Data Import - Soporte Técnico</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert-success" id="successAlert">
+                        <div class="success-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h4>¡Ticket creado exitosamente!</h4>
+                        <p>El ticket <strong id="createdTicketId"></strong> ha sido creado correctamente.</p>
+                        <p>Puede crear otro ticket si lo desea.</p>
+                        <button type="button" class="btn-create-another" id="createAnotherBtn">
+                            <i class="fas fa-plus me-2"></i>Crear otro ticket
+                        </button>
+                    </div>
+                    
+                    <form id="ticketForm">
+                        <div class="mb-4">
+                            <h3 class="section-title">Información del Cliente</h3>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label for="clientName" class="form-label required-field">Nombre del Cliente</label>
+                                    <input type="text" class="form-control" id="clientName" placeholder="Nombre Completo" required maxlength="255">
+                                    <div class="char-count"><span id="nameCount">0</span>/255</div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="clientPhone" class="form-label required-field">Teléfono</label>
+                                    <input type="tel" class="form-control" id="clientPhone" placeholder="Número de teléfono" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="clientEmail" class="form-label">E-mail</label>
+                                    <input type="email" class="form-control" id="clientEmail" placeholder="Correo electrónico">
+                                </div>
+                            </div>
+                            
+                            <!-- Campo de provincia sin ciudad -->
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label for="clientProvince" class="form-label required-field">Provincia</label>
+                                    <select class="form-select" id="clientProvince" required>
+                                        <option value="">Seleccione una provincia</option>
+                                        <option value="santiago">Santiago</option>
+                                        <option value="santo-domingo">Santo Domingo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div id="santoDomingoInfo" class="province-info">
+                                <i class="fas fa-info-circle me-2"></i>Para clientes en Santo Domingo, el tiempo de respuesta es de 2-4 horas.
+                            </div>
+                            
+                            <div id="santiagoInfo" class="province-info">
+                                <i class="fas fa-info-circle me-2"></i>Para clientes en Santiago, el tiempo de respuesta es de 4-6 horas.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h3 class="section-title">Información del Equipo</h3>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-8">
+                                    <label for="equipmentName" class="form-label required-field">Nombre / Tipo de equipo</label>
+                                    <input type="text" class="form-control" id="equipmentName" placeholder="Ej. Laptop HP EliteBook, Servidor Dell, etc." required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="serialNumber" class="form-label">Número de serie</label>
+                                    <input type="text" class="form-control" id="serialNumber" placeholder="SN o ID del equipo">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h3 class="section-title">Detalles del Problema</h3>
+                            
+                            <div class="mb-3">
+                                <label for="problemDescription" class="form-label required-field">Descripción del problema</label>
+                                <textarea class="form-control" id="problemDescription" rows="5" placeholder="Describa detalladamente el problema o incidente" maxlength="2000" required></textarea>
+                                <div class="char-count"><span id="descCount">0</span>/2000</div>
+                            </div>
+                            
+                            <div class="checkbox-container">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="criticalStatus">
+                                    <label class="form-check-label" for="criticalStatus">
+                                        <strong>Problema crítico</strong> (marque si requiere atención inmediata)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h3 class="section-title">Información Adicional</h3>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="incidentDate" class="form-label required-field">Fecha del incidente</label>
+                                    <input type="date" class="form-control" id="incidentDate" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="priority" class="form-label required-field">Prioridad</label>
+                                    <select class="form-select" id="priority" required>
+                                        <option value="low">Baja</option>
+                                        <option value="medium" selected>Media</option>
+                                        <option value="high">Alta</option>
+                                        <option value="critical">Crítica</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="captcha-container">
+                            <div class="form-check d-flex justify-content-center align-items-center">
+                                <input class="form-check-input me-3" type="checkbox" id="notRobot" required>
+                                <label class="form-check-label" for="notRobot">
+                                    No soy un robot
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-plus-circle me-2"></i>Crear Ticket
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para consultar estado del ticket -->
+    <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="statusModalLabel"><i class="fas fa-search me-2"></i>Consultar Estado del Ticket</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="statusResult" style="display: none;">
+                        <div class="alert alert-info" role="alert">
+                            <h4 class="alert-heading">Estado del Ticket: <span id="ticketIdResult"></span></h4>
+                            <p>Su ticket se encuentra actualmente en:</p>
+                            <div id="statusBadge" class="status-badge my-3"></div>
+                            <p id="statusDescription"></p>
+                            <hr>
+                            <p class="mb-0">Si tiene alguna pregunta adicional, no dude en contactarnos.</p>
+                        </div>
+                        <button type="button" class="btn btn-primary w-100 mt-3" data-bs-dismiss="modal">
+                            <i class="fas fa-check me-2"></i>Entendido
+                        </button>
+                    </div>
+
+                    <div id="statusForm">
+                        <p>Ingrese el ID de su ticket para consultar su estado actual en el sistema.</p>
+                        
+                        <div class="mb-3">
+                            <label for="ticketId" class="form-label">ID del Ticket</label>
+                            <input type="text" class="form-control" id="ticketId" placeholder="Ej: DI-013">
+                            <div class="form-text">El ID fue proporcionado al momento de crear su ticket.</div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-primary w-100" onclick="checkTicketStatus()">
+                            <i class="fas fa-search me-2"></i>Consultar Estado
+                        </button>
+                    </div>
+
+                    <div id="ticketNotFound" class="alert alert-danger mt-3" style="display: none;">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <span>No se encontró ningún ticket con el ID proporcionado. Verifique el ID e intente nuevamente.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+
+    <script src="./js/inicio.js"></script>
+</body>
+</html>

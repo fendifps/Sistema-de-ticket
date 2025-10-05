@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Import - Sistema de Tickets</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+
+    <link rel="stylesheet" href="./css/dashboard.css">
+</head>
+
+<body>
+    <!-- Sidebar para filtrado por provincia -->
+    <div class="sidebar" id="provinceSidebar">
+        <div class="sidebar-header">
+            <h3><i class=></i>Menu General</h3>
+            <button class="toggle-sidebar" id="toggleSidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <div class="province-filter">
+            <!-- Sistema de Tickets como categoría principal -->
+            <div class="menu-item" onclick="toggleSubItems('tickets-submenu')">
+                <div class="menu-icon">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <span class="menu-name">Sistema de Tickets</span>
+                <span class="badge-count" id="count-all">12</span>
+                <i class="fas fa-chevron-down" id="tickets-arrow"
+                    style="font-size: 12px; transition: var(--transition);"></i>
+            </div>
+
+            <!-- Submenu para sucursales -->
+            <div class="submenu open" id="tickets-submenu">
+                <div class="submenu-item active" data-province="all" onclick="changeProvince('all')">
+                    <div class="submenu-icon">
+                        <i class="fas fa-globe-americas"></i>
+                    </div>
+                    <span class="submenu-name">Todas las sucursales</span>
+                    <span class="badge-count" id="count-all-sub">12</span>
+                </div>
+
+                <div class="submenu-item" data-province="santiago" onclick="changeProvince('santiago')">
+                    <div class="submenu-icon">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <span class="submenu-name">Santiago</span>
+                    <span class="badge-count" id="count-santiago">7</span>
+                </div>
+
+                <div class="submenu-item" data-province="santo-domingo" onclick="changeProvince('santo-domingo')">
+                    <div class="submenu-icon">
+                        <i class="fas fa-city"></i>
+                    </div>
+                    <span class="submenu-name">Santo Domingo</span>
+                    <span class="badge-count" id="count-santo-domingo">5</span>
+                </div>
+            </div>
+
+            <!-- Inventario de Lotes como elemento separado -->
+            <div class="menu-item" data-view="inventory" onclick="changeView('inventory')">
+                <div class="menu-icon">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <span class="menu-name">Inventario de Lotes</span>
+                <span class="badge-count" id="count-inventory">3</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón para mostrar sidebar en móviles -->
+    <button class="mobile-sidebar-btn" id="mobileSidebarBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Overlay para móviles -->
+    <div class="mobile-sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Contenido principal - Tickets -->
+    <div class="main-content" id="tickets-content">
+        <div class="container">
+            <header>
+                <div class="logo">
+                    <i class="fas fa-server fa-2x" style="color: #4361ee;"></i>
+                    <h1>Data Import - Tickets</h1>
+                </div>
+                <div class="user-section">
+                    <div class="user-info">
+                        <div class="user-avatar">AR</div>
+                        <div>
+                            <div style="font-weight: 600;">Anthony Romero</div>
+                            <div style="font-size: 14px; color: var(--gray);">Administrador</div>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="logout-btn">Cerrar Sesión</button>
+                </div>
+            </header>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="technician">Filtrar por Técnico</label>
+                    <select id="technician">
+                        <option value="all">Todos los técnicos</option>
+                        <option value="MG">María García</option>
+                        <option value="AR">Ana Rodríguez</option>
+                        <option value="CL">Carlos López</option>
+                        <option value="JP">Juan Pérez</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="priority">Filtrar por Prioridad</label>
+                    <select id="priority">
+                        <option value="all">Todas las prioridades</option>
+                        <option value="critical">Crítico</option>
+                        <option value="high">Alto</option>
+                        <option value="medium">Medio</option>
+                        <option value="low">Bajo</option>
+                    </select>
+                </div>
+                <div class="filter-group search-box">
+                    <label for="search">Buscar tickets</label>
+                    <div style="position: relative;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search" placeholder="Buscar tickets...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="open-tickets">12</div>
+                    <div class="stat-label">Tickets Abiertos</div>
+                    <i class="stat-icon fas fa-ticket-alt"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="in-process-tickets">5</div>
+                    <div class="stat-label">En Proceso</div>
+                    <i class="stat-icon fas fa-cog"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="critical-tickets">3</div>
+                    <div class="stat-label">Críticos</div>
+                    <i class="stat-icon fas fa-exclamation-circle"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">78%</div>
+                    <div class="stat-label">Tasa de Resolución</div>
+                    <i class="stat-icon fas fa-chart-line"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2.5</div>
+                    <div class="stat-label">Días Promedio</div>
+                    <i class="stat-icon fas fa-clock"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">Resueltos (Mes)</div>
+                    <i class="stat-icon fas fa-check-circle"></i>
+                </div>
+            </div>
+
+            <div class="board">
+                <div class="column" data-status="new">
+                    <div class="column-header">
+                        <div class="column-title">Nuevo / Sin asignar</div>
+                        <button class="add-ticket-btn" onclick="openCreateModal()">
+                            <i class="fas fa-plus"></i> Nuevo Ticket
+                        </button>
+                    </div>
+                    <div class="tickets-list" id="new-tickets">
+                        <!-- Los tickets se cargarán dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="column" data-status="diagnosis">
+                    <div class="column-header">
+                        <div class="column-title">En diagnóstico</div>
+                    </div>
+                    <div class="tickets-list" id="diagnosis-tickets">
+                        <!-- Los tickets se cargarán dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="column" data-status="waiting">
+                    <div class="column-header">
+                        <div class="column-title">Esperando respuesta del cliente</div>
+                    </div>
+                    <div class="tickets-list" id="waiting-tickets">
+                        <!-- Los tickets se cargarán dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="column" data-status="process">
+                    <div class="column-header">
+                        <div class="column-title">En proceso / Reparación</div>
+                    </div>
+                    <div class="tickets-list" id="process-tickets-list">
+                        <!-- Los tickets se cargarán dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="column" data-status="resolved">
+                    <div class="column-header">
+                        <div class="column-title">Resueltos / Cerrados</div>
+                    </div>
+                    <div class="tickets-list" id="resolved-tickets">
+                        <!-- Los tickets se cargarán dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal - Inventario de Lotes -->
+    <div class="inventory-content" id="inventory-content">
+        <div class="container">
+            <header>
+                <div class="logo">
+                    <i class="fas fa-boxes fa-2x" style="color: #4361ee;"></i>
+                    <h1>Data Import - Inventario de Lotes</h1>
+                </div>
+                <div class="user-section">
+                    <div class="user-info">
+                        <div class="user-avatar">MG</div>
+                        <div>
+                            <div style="font-weight: 600;">Anthony Romero</div>
+                            <div style="font-size: 14px; color: var(--gray);">Administrador</div>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="logout-btn">Cerrar Sesión</button>
+                </div>
+            </header>
+
+            <div class="view-tabs">
+                <div class="view-tab active" data-tab="lots" onclick="showInventoryTab('lots')">Gestión de Lotes</div>
+                <div class="view-tab" data-tab="equipment" onclick="showInventoryTab('equipment')">Tablero de Equipos
+                </div>
+                <div class="view-tab" data-tab="reports" onclick="showInventoryTab('reports')">Reportes</div>
+            </div>
+
+            <!-- Sección de Gestión de Lotes -->
+            <div class="inventory-section" id="lots-section">
+                <h2>Registrar Nuevo Lote</h2>
+                <form id="lot-form" class="lot-form">
+                    <div class="form-group">
+                        <label for="lot-id">ID de Lote</label>
+                        <input type="text" id="lot-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lot-quantity">Cantidad de Equipos</label>
+                        <input type="number" id="lot-quantity" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="equipment-type-ticket">Tipo de Equipo</label>
+                        <select id="equipment-type-ticket" required>
+                            <option value="">Seleccionar tipo</option>
+                            <option value="laptop">Laptops</option>
+                            <option value="desktop">Desktops</option>
+                            <option value="server">Servidores</option>
+                            <option value="printer">Impresoras</option>
+                            <option value="network">Equipos de Red</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="initial-status">Estado Inicial</label>
+                        <select id="initial-status" required>
+                            <option value="received">Recibidos</option>
+                            <option value="diagnosis">En diagnóstico</option>
+                            <option value="repair">En reparación</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="lot-notes">Observaciones</label>
+                        <textarea id="lot-notes" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="lot-date">Fecha de Recepción</label>
+                        <input type="date" id="lot-date" required>
+                    </div>
+                    <div class="form-group" style="align-self: end;">
+                        <button type="submit" class="add-ticket-btn">
+                            <i class="fas fa-plus"></i> Registrar Lote
+                        </button>
+                    </div>
+                </form>
+
+                <h2>Lotes Registrados</h2>
+                <div id="lots-container">
+                    <!-- Los lotes se cargarán dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Sección de Tablero de Equipos -->
+            <div class="inventory-section" id="equipment-section" style="display: none;">
+                <div class="inventory-header">
+                    <h2>Tablero de Equipos</h2>
+                    <div class="filter-group">
+                        <label for="lot-filter">Filtrar por Lote:</label>
+                        <select id="lot-filter">
+                            <option value="all">Todos los lotes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="inventory-board">
+                    <div class="inventory-column" data-status="received">
+                        <div class="inventory-column-header">
+                            <div class="inventory-column-title">Recibidos</div>
+                            <div class="inventory-column-count" id="count-received">0</div>
+                        </div>
+                        <div class="equipment-list" id="received-equipment">
+                            <!-- Equipos recibidos -->
+                        </div>
+                    </div>
+
+                    <div class="inventory-column" data-status="diagnosis">
+                        <div class="inventory-column-header">
+                            <div class="inventory-column-title">En diagnóstico</div>
+                            <div class="inventory-column-count" id="count-diagnosis">0</div>
+                        </div>
+                        <div class="equipment-list" id="diagnosis-equipment">
+                            <!-- Equipos en diagnóstico -->
+                        </div>
+                    </div>
+
+                    <div class="inventory-column" data-status="repair">
+                        <div class="inventory-column-header">
+                            <div class="inventory-column-title">En reparación</div>
+                            <div class="inventory-column-count" id="count-repair">0</div>
+                        </div>
+                        <div class="equipment-list" id="repair-equipment">
+                            <!-- Equipos en reparación -->
+                        </div>
+                    </div>
+
+                    <div class="inventory-column" data-status="ready">
+                        <div class="inventory-column-header">
+                            <div class="inventory-column-title">Listos para venta</div>
+                            <div class="inventory-column-count" id="count-ready">0</div>
+                        </div>
+                        <div class="equipment-list" id="ready-equipment">
+                            <!-- Equipos listos para venta -->
+                        </div>
+                    </div>
+
+                    <div class="inventory-column" data-status="discarded">
+                        <div class="inventory-column-header">
+                            <div class="inventory-column-title">Descartados</div>
+                            <div class="inventory-column-count" id="count-discarded">0</div>
+                        </div>
+                        <div class="equipment-list" id="discarded-equipment">
+                            <!-- Equipos descartados -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Reportes -->
+            <div class="inventory-section" id="reports-section" style="display: none;">
+                <h2>Reportes de Inventario</h2>
+
+                <div class="report-filters">
+                    <div class="filter-group">
+                        <label for="report-lot">Filtrar por Lote:</label>
+                        <select id="report-lot">
+                            <option value="all">Todos los lotes</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="report-date-from">Desde:</label>
+                        <input type="date" id="report-date-from">
+                    </div>
+                    <div class="filter-group">
+                        <label for="report-date-to">Hasta:</label>
+                        <input type="date" id="report-date-to">
+                    </div>
+                    <div class="filter-group" style="align-self: end;">
+                        <button class="add-ticket-btn" onclick="generateReport()">
+                            <i class="fas fa-chart-bar"></i> Generar Reporte
+                        </button>
+                    </div>
+                </div>
+
+                <div class="report-table-container">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>ID de Lote</th>
+                                <th>Fecha Recepción</th>
+                                <th>Tipo Equipo</th>
+                                <th>Cantidad Total</th>
+                                <th>Recibidos</th>
+                                <th>En Diagnóstico</th>
+                                <th>En Reparación</th>
+                                <th>Listos para Venta</th>
+                                <th>Descartados</th>
+                                <th>Tiempo Promedio (días)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-table-body">
+                            <!-- Los datos del reporte se cargarán dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="context-menu" id="context-menu">
+        <ul>
+            <li onclick="openTicketDetails()"><i class="fas fa-external-link-alt"></i> Abrir ticket</li>
+            <li onclick="archiveTicket()"><i class="fas fa-archive"></i> Archivar</li>
+            <li onclick="deleteTicket()"><i class="fas fa-trash"></i> Eliminar</li>
+        </ul>
+    </div>
+
+    <!-- Modal para ver detalles del ticket -->
+    <div class="modal" id="ticket-details-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalles del Ticket</h3>
+                <span class="close-modal" onclick="closeModal('ticket-details-modal')">&times;</span>
+            </div>
+            <div id="ticket-details-content">
+                <!-- Los detalles del ticket se cargarán aquí dinámicamente -->
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" onclick="closeModal('ticket-details-modal')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear nuevo ticket -->
+    <div class="modal" id="create-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Crear Nuevo Ticket</h3>
+                <span class="close-modal" onclick="closeModal('create-modal')">&times;</span>
+            </div>
+            <form id="create-ticket-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="client-name">Nombre del Cliente *</label>
+                        <input type="text" id="client-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="client-phone">Teléfono *</label>
+                        <input type="tel" id="client-phone" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="client-email">E-mail</label>
+                    <input type="email" id="client-email">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="client-province">Provincia *</label>
+                        <select id="client-province" required>
+                            <option value="">Seleccionar provincia</option>
+                            <option value="santiago">Santiago</option>
+                            <option value="santo-domingo">Santo Domingo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="incident-date">Fecha del incidente *</label>
+                        <input type="date" id="incident-date" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="equipment-type">Nombre / Tipo de equipo *</label>
+                        <input type="text" id="equipment-type" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serial-number">Número de serie</label>
+                        <input type="text" id="serial-number">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="problem-description">Descripción del problema *</label>
+                    <textarea id="problem-description" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ticket-priority">Prioridad *</label>
+                        <select id="ticket-priority" required>
+                            <option value="">Seleccionar prioridad</option>
+                            <option value="low">Bajo</option>
+                            <option value="medium">Medio</option>
+                            <option value="high">Alto</option>
+                            <option value="critical">Crítico</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="critical-issue">
+                            <span>Problema crítico (atención inmediata)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn btn-cancel"
+                        onclick="closeModal('create-modal')">Cancelar</button>
+                    <button type="submit" class="modal-btn btn-confirm">Crear Ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para asignar técnico -->
+    <div class="modal" id="assign-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Asignar Técnico</h3>
+                <span class="close-modal" onclick="closeModal('assign-modal')">&times;</span>
+            </div>
+            <div class="form-group">
+                <label for="assign-technician">Seleccionar Técnico</label>
+                <select id="assign-technician">
+                    <option value="MG">María García</option>
+                    <option value="AR">Ana Rodríguez</option>
+                    <option value="CL">Carlos López</option>
+                    <option value="JP">Juan Pérez</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" onclick="closeModal('assign-modal')">Cancelar</button>
+                <button class="modal-btn btn-confirm" onclick="assignTechnician()">Asignar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para mover ticket -->
+    <div class="modal" id="move-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Mover Ticket</h3>
+                <span class="close-modal" onclick="closeModal('move-modal')">&times;</span>
+            </div>
+            <div class="form-group">
+                <label>Seleccionar Estado</label>
+                <div class="move-options">
+                    <div class="move-option" data-status="new" onclick="selectMoveOption(this, 'new')">
+                        <div>Nuevo / Sin asignar</div>
+                    </div>
+                    <div class="move-option" data-status="diagnosis" onclick="selectMoveOption(this, 'diagnosis')">
+                        <div>En diagnóstico</div>
+                    </div>
+                    <div class="move-option" data-status="waiting" onclick="selectMoveOption(this, 'waiting')">
+                        <div>Esperando respuesta</div>
+                    </div>
+                    <div class="move-option" data-status="process" onclick="selectMoveOption(this, 'process')">
+                        <div>En proceso</div>
+                    </div>
+                    <div class="move-option" data-status="resolved" onclick="selectMoveOption(this, 'resolved')">
+                        <div>Resuelto</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" onclick="closeModal('move-modal')">Cancelar</button>
+                <button class="modal-btn btn-confirm" onclick="moveTicket()">Mover</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para mover equipo de inventario -->
+    <div class="modal" id="move-equipment-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Mover Equipo</h3>
+                <span class="close-modal" onclick="closeModal('move-equipment-modal')">&times;</span>
+            </div>
+            <div class="form-group">
+                <label>Seleccionar Estado</label>
+                <div class="move-options">
+                    <div class="move-option" data-status="received"
+                        onclick="selectEquipmentMoveOption(this, 'received')">
+                        <div>Recibidos</div>
+                    </div>
+                    <div class="move-option" data-status="diagnosis"
+                        onclick="selectEquipmentMoveOption(this, 'diagnosis')">
+                        <div>En diagnóstico</div>
+                    </div>
+                    <div class="move-option" data-status="repair" onclick="selectEquipmentMoveOption(this, 'repair')">
+                        <div>En reparación</div>
+                    </div>
+                    <div class="move-option" data-status="ready" onclick="selectEquipmentMoveOption(this, 'ready')">
+                        <div>Listo para venta</div>
+                    </div>
+                    <div class="move-option" data-status="discarded"
+                        onclick="selectEquipmentMoveOption(this, 'discarded')">
+                        <div>Descartado</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" onclick="closeModal('move-equipment-modal')">Cancelar</button>
+                <button class="modal-btn btn-confirm" onclick="moveEquipment()">Mover</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notifications container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    
+
+    <script src="./js/dashboard.js"></script>
+</body>
+
+</html>

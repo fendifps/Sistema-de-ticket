@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Import - Sistema de Tickets</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+
+    <link rel="stylesheet" href="./css/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo-container">
+                <!-- Imagen base64 para evitar problemas de ruta -->
+                <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" rx="50" fill="#3498db"/>
+                    <path d="M30 30H70V70H30V30Z" fill="white"/>
+                    <path d="M40 40H60V60H40V40Z" fill="#3498db"/>
+                    <path d="M50 20V80" stroke="white" stroke-width="4"/>
+                    <path d="M20 50H80" stroke="white" stroke-width="4"/>
+                </svg>
+            </div>
+            <h1>Soporte Técnico</h1>
+            <p>Sistema interno de gestión de tickets</p>
+        </div>
+        
+        <div class="login-form">
+            <div class="error-message" id="errorMessage">
+                <i class="fas fa-exclamation-circle"></i> <span id="errorText">Credenciales incorrectas. Por favor, intente nuevamente.</span>
+            </div>
+            
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i> ¡Login exitoso! Redirigiendo...
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" name="username" placeholder="Ingrese su usuario" required autocomplete="username">
+                    </div>
+                    <div class="input-error" id="usernameError">Por favor ingrese un nombre de usuario válido</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required autocomplete="current-password">
+                        <span class="password-toggle" id="passwordToggle">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="input-error" id="passwordError">La contraseña es requerida</div>
+                    <div class="attempts-warning" id="attemptsWarning">
+                        <i class="fas fa-exclamation-triangle"></i> Le quedan <span id="attemptsLeft">3</span> intentos
+                    </div>
+                </div>
+                
+                <div class="remember-forgot">
+                    <div class="remember-me">
+                        <input type="checkbox" id="rememberMe" name="rememberMe">
+                        <label for="rememberMe">Recordar usuario</label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-login" id="loginButton">
+                    <span id="buttonText">Iniciar Sesión</span>
+                    <span id="buttonLoading" class="loading" style="display: none;"></span>
+                </button>
+                
+                <div class="security-notice">
+                    <i class="fas fa-shield-alt"></i> Sistema seguro. Sus credenciales están protegidas.
+                </div>
+            </form>
+        </div>
+        
+        <div class="login-footer">
+            &copy; 2023 Data Import - Uso interno exclusivo
+        </div>
+    </div>
+
+    
+
+    <script src="./js/login.js"></script>
+</body>
+</html>
