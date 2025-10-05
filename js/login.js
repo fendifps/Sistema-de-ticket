@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         // Redirección a la página principal
                         setTimeout(function() {
-                            window.location.href = 'dashboard.html';
+                            window.location.href = 'index.html';
                         }, 1000);
                     } else {
                         loginAttempts++;
