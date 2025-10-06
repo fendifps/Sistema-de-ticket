@@ -160,6 +160,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Verificar si ya está autenticado
             if (localStorage.getItem('isLoggedIn') === 'true') {
-                window.location.href = 'dashboard.html';
+                window.location.href = 'index.html';
             }
         });
